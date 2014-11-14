@@ -25,9 +25,9 @@ sub unqq($) { perlstring @_ }
 {
    my $st = String::Tagged::IRC->new
       ->append       ( "A word in " )
-      ->append_tagged( "bold", b => 1 )
+      ->append_tagged( "bold", bold => 1 )
       ->append       ( " or " )
-      ->append_tagged( "italic", i => 1 );
+      ->append_tagged( "italic", italic => 1 );
 
    is( unqq $st->build_irc, unqq "A word in \cBbold\cB or \c]italic", '->build with boolean formatting' );
 }

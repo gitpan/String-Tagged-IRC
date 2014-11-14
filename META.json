@@ -24,14 +24,14 @@
          "requires" : {
             "Convert::Color::RGB8" : "0",
             "Convert::Color::mIRC" : "0",
-            "String::Tagged" : "0"
+            "String::Tagged" : "0.11"
          }
       }
    },
    "provides" : {
       "String::Tagged::IRC" : {
          "file" : "lib/String/Tagged/IRC.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       }
    },
    "release_status" : "stable",
@@ -40,5 +40,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }

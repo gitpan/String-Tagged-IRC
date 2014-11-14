@@ -8,7 +8,7 @@ my $build = Module::Build->new(
    requires => {
       'Convert::Color::RGB8' => 0,
       'Convert::Color::mIRC' => 0,
-      'String::Tagged' => 0,
+      'String::Tagged' => '0.11',
    },
    build_requires => {
       'String::Tagged' => '0.10', # chaining ->append_tagged

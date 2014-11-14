@@ -3,7 +3,10 @@ NAME
     `String::Tagged'
 
 TAGS
-  b, u, i, rv
+    This module provides the following tags, conforming to the
+    String::Tagged::Formatting API specification.
+
+  bold, under, italic, reverse
     Boolean values indicating bold, underline, italics, or reverse-video.
 
   fg, bg
@@ -21,7 +24,7 @@ METHODS
 
     parse_plain_formatting => BOOL
             If true, also parse "poor-man's" plain-text formatting of
-            *bold*, **italic** and _underline_. In this case, formatting
+            *bold*, */italic/* and _underline_. In this case, formatting
             tags are added but the original text formatting is preserved.
 
   $raw = $st->build_irc

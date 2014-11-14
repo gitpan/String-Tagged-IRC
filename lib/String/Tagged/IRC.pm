@@ -8,8 +8,9 @@ package String::Tagged::IRC;
 use strict;
 use warnings;
 use base qw( String::Tagged );
+String::Tagged->VERSION( '0.11' ); # ->clone
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Convert::Color::mIRC;
 use Convert::Color::RGB8;
@@ -20,7 +21,10 @@ C<String::Tagged::IRC> - parse and format IRC messages using C<String::Tagged>
 
 =head1 TAGS
 
-=head2 b, u, i, rv
+This module provides the following tags, conforming to the
+L<String::Tagged::Formatting> API specification.
+
+=head2 bold, under, italic, reverse
 
 Boolean values indicating bold, underline, italics, or reverse-video.
 
@@ -76,7 +80,7 @@ Takes the following named options:
 =item parse_plain_formatting => BOOL
 
 If true, also parse "poor-man's" plain-text formatting of B<*bold*>,
-I<*italic*> and _underline_. In this case, formatting tags are added but the
+I</italic/> and _underline_. In this case, formatting tags are added but the
 original text formatting is preserved.
 
 =back
@@ -132,16 +136,16 @@ sub parse_irc
          my $ctrl = chr(ord($1)+0x40);
 
          if( $ctrl eq "B" ) {
-            $format{b} ? delete $format{b} : ( $format{b} = 1 );
+            $format{bold} ? delete $format{bold} : ( $format{bold} = 1 );
          }
          elsif( $ctrl eq "U" or $ctrl eq "_" ) {
-            $format{u} ? delete $format{u} : ( $format{u} = 1 );
+            $format{under} ? delete $format{under} : ( $format{under} = 1 );
          }
          elsif( $ctrl eq "R" or $ctrl eq "]" ) {
-            $format{i} ? delete $format{i} : ( $format{i} = 1 );
+            $format{italic} ? delete $format{italic} : ( $format{italic} = 1 );
          }
          elsif( $ctrl eq "V" ) {
-            $format{rv} ? delete $format{rv} : ( $format{rv} = 1 );
+            $format{reverse} ? delete $format{reverse} : ( $format{reverse} = 1 );
          }
          elsif( $ctrl eq "O" ) {
             undef %format;
@@ -163,13 +167,13 @@ sub parse_irc
          }
          elsif( $ctrl eq "D" ) {
             if( $text =~ s/^b// ) { # underline
-               $format{u} ? delete $format{u} : ( $format{u} = 1 );
+               $format{under} ? delete $format{under} : ( $format{under} = 1 );
             }
             elsif( $text =~ s/^c// ) { # bold
-               $format{b} ? delete $format{b} : ( $format{b} = 1 );
+               $format{bold} ? delete $format{bold} : ( $format{bold} = 1 );
             }
             elsif( $text =~ s/^d// ) { # revserse/italic
-               $format{i} ? delete $format{i} : ( $format{i} = 1 );
+               $format{italic} ? delete $format{italic} : ( $format{italic} = 1 );
             }
             elsif( $text =~ s/^g// ) {
                undef %format
@@ -197,14 +201,15 @@ sub parse_irc
             $piece =~ s/^(.*?)(?<!\w)(([\*_\/])\w+\3)(?!\w)// or
                last;
 
-            my ( $pre, $inner, $type ) = ( $1, $2, $3 );
+            my ( $pre, $inner, $flag ) = ( $1, $2, $3 );
 
             $self->append_tagged( $pre, %format ) if length $pre;
 
             my %innerformat = %format;
 
-            $type =~ tr{*_/}{bui};
-            $innerformat{$type} = 1;
+            $innerformat{
+               { '*' => "bold", '_' => "under", '/' => "italic" }->{$flag}
+            } = 1;
 
             $self->append_tagged( $inner, %innerformat );
          }
@@ -252,10 +257,11 @@ sub build_irc
    $self->iter_extents_nooverlap( sub {
       my ( $extent, %tags ) = @_;
 
-      $ret .= "\cB" if !$formats{b}  != !$tags{b};   $formats{b}  = $tags{b};
-      $ret .= "\c_" if !$formats{u}  != !$tags{u};   $formats{u}  = $tags{u};
-      $ret .= "\c]" if !$formats{i}  != !$tags{i};   $formats{i}  = $tags{i};
-      $ret .= "\cV" if !$formats{rv} != !$tags{rv};  $formats{rv} = $tags{rv};
+      $ret .= "\cB" if !$formats{bold}    != !$tags{bold};
+      $ret .= "\c_" if !$formats{under}   != !$tags{under};
+      $ret .= "\c]" if !$formats{italic}  != !$tags{italic};
+      $ret .= "\cV" if !$formats{reverse} != !$tags{reverse};
+      $formats{$_} = $tags{$_} for qw( bold under italic reverse );
 
       my $fg = $tags{fg} ? $tags{fg}->as_mirc->index : undef;
       my $bg = $tags{bg} ? $tags{bg}->as_mirc->index : undef;
@@ -287,6 +293,22 @@ sub build_irc
    $ret .= "\cC" if defined $formats{fg} or defined $formats{bg};
 
    return $ret;
+}
+
+sub new_from_formatted
+{
+   my $class = shift;
+   my ( $orig ) = @_;
+
+   return $class->clone( $orig,
+      only_tags => [qw( bold under italic reverse fg bg )]
+   );
+}
+
+sub as_formatted
+{
+   my $self = shift;
+   return $self;
 }
 
 =head1 TODO

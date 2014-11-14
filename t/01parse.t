@@ -22,10 +22,10 @@ use String::Tagged::IRC;
    my $st = String::Tagged::IRC->parse_irc( "A word in \cBbold\cB or \c]italic\c]" );
 
    is( "$st", "A word in bold or italic", '"$st" with mIRC-style bold and italic' );
-   is_deeply( [ sort $st->tagnames ], [qw( b i )], '$st has b and i tags' );
+   is_deeply( [ sort $st->tagnames ], [qw( bold italic )], '$st has b and i tags' );
 
-   is_deeply( $st->get_tags_at( index $st, "bold"   ), { b => 1 }, '$st has b at "bold"' );
-   is_deeply( $st->get_tags_at( index $st, "italic" ), { i => 1 }, '$st has i at "italic"' );
+   is_deeply( $st->get_tags_at( index $st, "bold"   ), { bold   => 1 }, '$st has bold at "bold"' );
+   is_deeply( $st->get_tags_at( index $st, "italic" ), { italic => 1 }, '$st has italic at "italic"' );
 }
 
 # mIRC-style colour tags
@@ -44,10 +44,10 @@ use String::Tagged::IRC;
    my $st = String::Tagged::IRC->parse_irc( "A word in \cDcbold\cDc or \cDditalic\cDd" );
 
    is( "$st", "A word in bold or italic", '"$st" with irssi-style bold and italic' );
-   is_deeply( [ sort $st->tagnames ], [qw( b i )], '$st has b and i tags' );
+   is_deeply( [ sort $st->tagnames ], [qw( bold italic )], '$st has b and i tags' );
 
-   is_deeply( $st->get_tags_at( index $st, "bold"   ), { b => 1 }, '$st has b at "bold"' );
-   is_deeply( $st->get_tags_at( index $st, "italic" ), { i => 1 }, '$st has i at "italic"' );
+   is_deeply( $st->get_tags_at( index $st, "bold"   ), { bold   => 1 }, '$st has bold at "bold"' );
+   is_deeply( $st->get_tags_at( index $st, "italic" ), { italic => 1 }, '$st has italic at "italic"' );
 }
 
 # irssi-style colour tags

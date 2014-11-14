@@ -7,7 +7,7 @@ WriteMakefile
   'PREREQ_PM' => {
                    'Convert::Color::RGB8' => 0,
                    'Convert::Color::mIRC' => 0,
-                   'String::Tagged' => '0.10',
+                   'String::Tagged' => '0.11',
                    'Test::More' => '0.88'
                  },
   'INSTALLDIRS' => 'site',
